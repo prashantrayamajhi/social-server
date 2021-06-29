@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
  */
 const UserSchema = new mongoose.Schema(
   {
-    fullName: {
+    name: {
       type: String,
       required: true,
     },
@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       unique: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
     },
     passwordResetToken: String,
     passwordResetTokenExpiry: Date,
