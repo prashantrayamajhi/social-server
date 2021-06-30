@@ -1,5 +1,5 @@
-import cloudinary from "cloudinary";
-import { v4 as uuid } from "uuid";
+const cloudinary = require("cloudinary");
+const { v4 } = require("uuid");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,31 +9,21 @@ cloudinary.config({
 
 /**
  *  Uploads file to Cloudinary CDN
- *
- *  @param {stream} object, image streaming content
  *  @param {folder} string, folder name, where to save image
  *  @param {string} imagePublicId
  */
-export const uploadToCloudinary = async (stream, folder, imagePublicId) => {
+exports.uploadToCloudinary = async (folder, imagePublicId) => {
   // if imagePublicId param is presented we should overwrite the image
   const options = imagePublicId
     ? { public_id: imagePublicId, overwrite: true }
-    : { public_id: `${folder}/${uuid()}` };
+    : { public_id: `${folder}/${v4()}` };
 
-  return new Promise((resolve, reject) => {
-    const streamLoad = cloudinary.v2.uploader.upload_stream(
-      options,
-      (error, result) => {
-        if (result) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      }
-    );
-
-    stream.pipe(streamLoad);
-  });
+  try {
+    const result = await cloudinary.v2.uploader.upload(folder);
+    return result;
+  } catch (err) {
+    return err;
+  }
 };
 
 /**
@@ -41,7 +31,7 @@ export const uploadToCloudinary = async (stream, folder, imagePublicId) => {
  *
  *  @param {string} publicId id for deleting the image
  */
-export const deleteFromCloudinary = async (publicId) => {
+exports.deleteFromCloudinary = async (publicId) => {
   return new Promise((resolve, reject) => {
     cloudinary.v2.uploader.destroy(publicId, (error, result) => {
       if (result) {

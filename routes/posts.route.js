@@ -1,11 +1,13 @@
 const router = require("express").Router();
 const controller = require("../controllers/posts.controller");
 const passport = require("passport");
+const upload = require("./../middleware/multer");
 
 router.get("/", controller.getPosts);
 
 router.post(
   "/",
+  upload.single("image"),
   passport.authenticate("jwt", { session: false }),
   controller.postPost
 );
