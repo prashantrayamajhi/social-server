@@ -1,5 +1,4 @@
 const cloudinary = require("cloudinary");
-const { v4 } = require("uuid");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,10 +13,9 @@ cloudinary.config({
  */
 exports.uploadToCloudinary = async (folder, imagePublicId) => {
   // if imagePublicId param is presented we should overwrite the image
-  const options = imagePublicId
-    ? { public_id: imagePublicId, overwrite: true }
-    : { public_id: `${folder}/${v4()}` };
-
+  // const options = imagePublicId
+  //   ? { public_id: imagePublicId, overwrite: true }
+  //   : { public_id: `${folder}/${v4()}` };
   try {
     const result = await cloudinary.v2.uploader.upload(folder);
     return result;

@@ -3,6 +3,7 @@ const {
   uploadToCloudinary,
   deleteFromCloudinary,
 } = require("./../utils/cloudinary");
+const fs = require("fs");
 
 exports.getPosts = async (req, res) => {
   try {
@@ -28,6 +29,8 @@ exports.postPost = async (req, res) => {
       const uploadImage = await uploadToCloudinary(
         "uploads/" + req.file.filename
       );
+      const path = req.file.path;
+      fs.unlinkSync(path);
       if (!uploadImage.secure_url) {
         return res.status(500).send({ err: "Cannot upload to cloudinary" });
       }
