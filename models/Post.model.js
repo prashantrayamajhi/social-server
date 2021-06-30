@@ -10,7 +10,7 @@ const postSchema = Schema(
     title: String,
     image: String,
     imagePublicId: String,
-    author: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
