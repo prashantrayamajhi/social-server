@@ -6,6 +6,7 @@ require("./security/passport")(passport);
 
 // routes
 const AuthRoute = require("./routes/auth.route");
+const UserRoute = require("./routes/user.route");
 const PostRoute = require("./routes/posts.route");
 
 // middlewares
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //router middlewares
 app.use("/api/v1/auth", AuthRoute);
+app.use("/api/v1/users", UserRoute);
 app.use("/api/v1/posts", PostRoute);
 
 module.exports = app;
