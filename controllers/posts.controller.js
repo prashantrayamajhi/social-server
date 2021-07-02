@@ -6,10 +6,20 @@ const {
 const fs = require("fs");
 
 exports.getPosts = async (req, res) => {
+  let postLimit = 2;
+  const page = req.query.page ? req.query.page : 1;
+  const skip = (page - 1) * postLimit;
   try {
-    const data = await Post.find().populate("user", "-password").sort({
-      createdAt: -1,
-    });
+    const postsCount = await Post.find().countDocuments();
+    const posts = await Post.find()
+      .populate("user", "-password")
+      .skip(skip)
+      .limit(postLimit)
+      .sort({
+        createdAt: -1,
+      });
+    const data = { posts, postsCount };
+
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
