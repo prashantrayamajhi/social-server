@@ -7,7 +7,7 @@ const fs = require("fs");
 
 exports.getPosts = async (req, res) => {
   try {
-    const data = await Post.find().populate("user").sort({
+    const data = await Post.find().populate("user", "-password").sort({
       createdAt: -1,
     });
     return res.status(200).json({ data });
