@@ -12,7 +12,10 @@ exports.getPosts = async (req, res) => {
   try {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
-      .populate("user", "-password")
+      .populate(
+        "user",
+        "-password -email -gender -createdAt -updatedAt -notifications -followers -following -notifications -posts -messages"
+      )
       .skip(skip)
       .limit(postLimit)
       .sort({
