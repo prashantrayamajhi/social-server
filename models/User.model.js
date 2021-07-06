@@ -42,6 +42,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isActivated: {
+      type: Boolean,
+      default: false,
+    },
     posts: [
       {
         type: mongoose.Types.ObjectId,

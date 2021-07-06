@@ -14,7 +14,7 @@ exports.getPosts = async (req, res) => {
     const posts = await Post.find()
       .populate(
         "user",
-        "-password -email -gender -createdAt -updatedAt -notifications -followers -following -notifications -posts -messages"
+        "-password -email -gender -createdAt -updatedAt -notifications -followers -following -notifications -posts -messages -likes -comments"
       )
       .skip(skip)
       .limit(postLimit)

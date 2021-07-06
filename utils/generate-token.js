@@ -12,3 +12,17 @@ exports.generateToken = (user, secret, expiresIn) => {
 
   return jwt.sign({ id: _id, name, email }, secret, { expiresIn });
 };
+
+/**
+ * Length of the token
+ * @param {length}
+ */
+exports.generateVerificationToken = (length) => {
+  const variables = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let token = "";
+  for (let i = 0; i < length; i++) {
+    token += variables[Math.floor(Math.random() * variables.length)];
+  }
+  token = token.toUpperCase();
+  return token;
+};
