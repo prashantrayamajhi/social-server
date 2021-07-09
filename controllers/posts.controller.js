@@ -68,11 +68,17 @@ exports.postPost = async (req, res) => {
 exports.updatePostById = async (req, res) => {
   const postId = req.params.id;
   const userId = String(req.user._id);
+  let { title, anonymous } = req.body;
+  title = title.trim();
   try {
     const post = await Post.findOne({ _id: postId });
     if (!post) return res.status(404).send({ msg: "Post not found" });
     if (userId !== String(post.user))
-      return res.status(401).send({ msg: "Cannot delete post" });
+      return res.status(401).send({ msg: "Cannot update post" });
+    post.title = title;
+    post.anonymous = anonymous;
+    const data = await post.save();
+    return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
