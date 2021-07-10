@@ -17,21 +17,29 @@ exports.searchUsers = async (req, res) => {
   }
 };
 
-exports.updateUser = (req, res) => {
+exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  console.log(req.body);
-  console.log(req.file);
-  console.log(req.files);
   try {
+    const user = await Users.findOne({ _id: id });
+    if (!user) return res.status(404).send({ err: "User not found" });
+    if (String(user._id) !== String(req.user._id))
+      return res.status(401).send({ err: "Cannot update profile" });
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
   }
 };
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
+    const user = await Users.findOne({ _id: id });
+    if (!user) return res.status(404).send({ err: "User not found" });
+    if (String(user._id) !== String(req.user._id))
+      return res.status(401).send({ err: "Cannot delete profile" });
+
+    await Users.findByIdAndDelete(id);
+    return res.status(200).send({ msg: "Account deleted" });
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
