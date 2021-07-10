@@ -28,8 +28,6 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
-    passwordResetToken: String,
-    passwordResetTokenExpiry: Date,
     password: {
       type: String,
       required: true,
