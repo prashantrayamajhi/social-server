@@ -85,30 +85,31 @@ const UserSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    social: [
-      {
-        github: {
-          type: String,
-          trim: true,
-        },
-        linkedin: {
-          type: String,
-          trim: true,
-        },
-        website: {
-          type: String,
-          trim: true,
-        },
-        instagram: {
-          type: String,
-          trim: true,
-        },
-        facebook: {
-          type: String,
-          trim: true,
-        },
-      },
-    ],
+
+    github: {
+      type: String,
+      trim: true,
+    },
+    linkedin: {
+      type: String,
+      trim: true,
+    },
+    youtube: {
+      type: String,
+      trim: true,
+    },
+    website: {
+      type: String,
+      trim: true,
+    },
+    instagram: {
+      type: String,
+      trim: true,
+    },
+    facebook: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

@@ -6,6 +6,7 @@ module.exports = mongoose
     useFindAndModify: true,
     useCreateIndex: true,
     useNewUrlParser: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("Connected to the database");

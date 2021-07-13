@@ -4,6 +4,30 @@ const {
   deleteFromCloudinary,
 } = require("./../utils/cloudinary");
 const fs = require("fs");
+const User = require("./../models/User.model");
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await Users.find().select([
+      "name",
+      "username",
+      "image",
+      "github",
+      "linkedin",
+      "instagram",
+      "youtube",
+      "website",
+      "facebook",
+      "image",
+    ]);
+    const userCount = await Users.find().countDocuments();
+    const data = { users, userCount };
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
 
 exports.searchUsers = async (req, res) => {
   const { term } = req.params;
@@ -25,22 +49,34 @@ exports.searchUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
 
-  let imageUrl;
-  let coverImageUrl;
-  let imagePublicId;
-  let coverImagePublicId;
+  let {
+    name,
+    password,
+    github,
+    linkedin,
+    instagram,
+    youtube,
+    website,
+    facebook,
+  } = req.body;
 
+  if (name) name = name.trim();
+  if (password) password = password.trim();
+
+  if (!name) return res.status(400).send({ err: "Name cannot be empty" });
+  if (!password)
+    return res.status(400).send({ err: "Password cannot be empty" });
+
+  let imageUrl;
+  let imagePublicId;
   try {
     const user = await Users.findOne({ _id: id });
     if (!user) return res.status(404).send({ err: "User not found" });
     if (String(user._id) !== String(req.user._id))
       return res.status(401).send({ err: "Cannot update profile" });
-
-    if (req.files.image) {
-      const image = await uploadToCloudinary(
-        "uploads/" + req.files.image[0].filename
-      );
-      const path = req.files.image[0].path;
+    if (req.file) {
+      const image = await uploadToCloudinary("uploads/" + req.file.filename);
+      const path = req.file.path;
       fs.unlinkSync(path);
       if (!image.secure_url) {
         return res.status(500).send({ err: "Cannot upload to cloudinary" });
@@ -49,19 +85,26 @@ exports.updateUser = async (req, res) => {
       imagePublicId = image.public_id;
     }
 
-    // if (req.files.coverImage) {
-    //   const coverImage = await uploadToCloudinary(
-    //     "uploads/" + req.files.coverImage[0].filename
-    //   );
-    //   console.log(coverImage);
-    //   const path = req.files.coverImage[0].path;
-    //   fs.unlinkSync(path);
-    //   if (!coverImage.secure_url) {
-    //     return res.status(500).send({ err: "Cannot upload to cloudinary" });
-    //   }
-    //   coverImageUrl = coverImage.secure_url;
-    //   coverImagePublicId = coverImage.public_id;
-    // }
+    if (req.body.image) {
+      imageUrl = req.body.image;
+    }
+
+    const data = await User.findOneAndUpdate(
+      { _id: user._id },
+      {
+        name,
+        password,
+        github,
+        linkedin,
+        instagram,
+        youtube,
+        website,
+        facebook,
+        image: imageUrl,
+        imagePublicId,
+      }
+    );
+    return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
@@ -80,5 +123,13 @@ exports.deleteUser = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
+  }
+};
+
+exports.deleteProfilePicture = async (req, res) => {
+  try {
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
   }
 };

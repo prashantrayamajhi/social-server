@@ -3,6 +3,8 @@ const controller = require("../controllers/user.controller");
 const upload = require("./../middleware/multer");
 const passport = require("passport");
 
+router.get("/search", controller.getUsers);
+
 router.get("/search/:term", controller.searchUsers);
 
 router.patch(
