@@ -8,10 +8,7 @@ router.get("/search/:term", controller.searchUsers);
 router.patch(
   "/profile/:id",
   passport.authenticate("jwt", { session: false }),
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "coverImage", maxCount: 1 },
-  ]),
+  upload.single("image"),
   controller.updateUser
 );
 

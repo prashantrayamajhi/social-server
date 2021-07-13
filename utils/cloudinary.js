@@ -20,6 +20,7 @@ exports.uploadToCloudinary = async (folder, imagePublicId) => {
     const result = await cloudinary.v2.uploader.upload(folder);
     return result;
   } catch (err) {
+    console.log(err);
     return err;
   }
 };

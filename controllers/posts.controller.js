@@ -32,11 +32,13 @@ exports.getPosts = async (req, res) => {
 
 exports.postPost = async (req, res) => {
   let { title, anonymous } = req.body;
-  title = title.trim();
+  if (title) {
+    title = title.trim();
+  }
   let imageUrl, imagePublicId;
   try {
-    if (title.length <= 0 && !req.file) {
-      return res.status().send({ err: "Cannot create an empty post" });
+    if (!title && !req.file) {
+      return res.status(400).send({ err: "Cannot create an empty post" });
     }
     if (req.file) {
       const uploadImage = await uploadToCloudinary(
@@ -69,7 +71,12 @@ exports.updatePostById = async (req, res) => {
   const postId = req.params.id;
   const userId = String(req.user._id);
   let { title, anonymous } = req.body;
-  title = title.trim();
+  if (title) {
+    title = title.trim();
+  }
+  if (!title && !req.body.anonymous) {
+    return res.status(400).send({ err: "Cannot create an empty post" });
+  }
   try {
     const post = await Post.findOne({ _id: postId });
     if (!post) return res.status(404).send({ msg: "Post not found" });
