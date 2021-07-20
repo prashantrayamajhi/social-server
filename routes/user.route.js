@@ -20,4 +20,10 @@ router.delete(
   controller.deleteUser
 );
 
+router.post(
+  "/follow",
+  passport.authenticate("jwt", { session: false }),
+  controller.followUser
+);
+
 module.exports = router;

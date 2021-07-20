@@ -5,6 +5,7 @@ const {
 } = require("./../utils/cloudinary");
 const fs = require("fs");
 const User = require("./../models/User.model");
+const bcrypt = require("bcryptjs");
 
 exports.getUsers = async (req, res) => {
   try {
@@ -62,6 +63,8 @@ exports.updateUser = async (req, res) => {
 
   if (name) name = name.trim();
   if (password) password = password.trim();
+
+  password = bcrypt.hashSync(password, 10);
 
   if (!name) return res.status(400).send({ err: "Name cannot be empty" });
   if (!password)
@@ -128,6 +131,34 @@ exports.deleteUser = async (req, res) => {
 
 exports.deleteProfilePicture = async (req, res) => {
   try {
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
+exports.followUser = async (req, res) => {
+  const { userId } = req.body;
+  const id = String(req.user.id);
+  try {
+    const user = await User.findById(userId);
+    const currentUser = await User.findById(id);
+    if (!user) return res.status(404).send({ err: "User not found" });
+    if (userId === id)
+      return res.status(400).send({ err: "Cannot follow yourself" });
+    if (user.followers.includes(id))
+      return res.status(400).send({ err: "Already following the user" });
+    await currentUser.updateOne({
+      $push: {
+        following: userId,
+      },
+    });
+    await user.updateOne({
+      $push: {
+        followers: id,
+      },
+    });
+    res.status(200).send({ msg: "User followed" });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
