@@ -5,6 +5,12 @@ const upload = require("./../middleware/multer");
 
 router.get("/", controller.getPosts);
 
+router.get(
+  "/like/:postId",
+  passport.authenticate("jwt", { session: false }),
+  controller.like
+);
+
 router.post(
   "/",
   upload.single("image"),

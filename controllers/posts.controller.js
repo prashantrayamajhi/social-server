@@ -12,10 +12,8 @@ exports.getPosts = async (req, res) => {
   try {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
-      .populate(
-        "user",
-        "-password -email -gender -createdAt -updatedAt -notifications -followers -following -notifications -posts -messages -likes -comments"
-      )
+      .populate("user", "name image")
+      .populate("likes", "name image")
       .skip(skip)
       .limit(postLimit)
       .sort({
@@ -105,6 +103,34 @@ exports.deletePostById = async (req, res) => {
     }
     await Post.findByIdAndDelete({ _id: postId });
     return res.status(200).send({ msg: "Post deleted" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
+exports.like = async (req, res) => {
+  let { postId } = req.params;
+  const userId = String(req.user._id);
+  try {
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).send({ err: "Post not found" });
+    // unlike the post if the post is already liked by the user
+    if (post.likes.includes(userId)) {
+      await post.updateOne({
+        $pull: {
+          likes: userId,
+        },
+      });
+      return res.status(200).send({ msg: "Post unliked" });
+    } else {
+      await post.updateOne({
+        $push: {
+          likes: userId,
+        },
+      });
+      return res.status(200).send({ msg: "Post liked" });
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
