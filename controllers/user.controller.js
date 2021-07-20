@@ -9,18 +9,23 @@ const bcrypt = require("bcryptjs");
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await Users.find().select([
-      "name",
-      "username",
-      "image",
-      "github",
-      "linkedin",
-      "instagram",
-      "youtube",
-      "website",
-      "facebook",
-      "image",
-    ]);
+    const users = await Users.find()
+      .select([
+        "name",
+        "username",
+        "image",
+        "github",
+        "linkedin",
+        "instagram",
+        "youtube",
+        "website",
+        "facebook",
+        "image",
+        "followers",
+        "following",
+      ])
+      .populate("followers", "name image")
+      .populate("following", "name image");
     const userCount = await Users.find().countDocuments();
     const data = { users, userCount };
     return res.status(200).json({ data });
@@ -35,7 +40,10 @@ exports.searchUsers = async (req, res) => {
   try {
     const users = await Users.find({
       $or: [{ name: term }, { username: term }],
-    }).select(["name", "username", "image"]);
+    })
+      .select(["name", "username", "image", "followers", "following"])
+      .populate("followers", "name image")
+      .populate("following", "name image");
     const userCount = await Users.find({
       $or: [{ name: term }, { username: term }],
     }).countDocuments();

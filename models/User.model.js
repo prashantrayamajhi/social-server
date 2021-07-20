@@ -64,13 +64,13 @@ const UserSchema = new mongoose.Schema(
     followers: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Follow",
+        ref: "User",
       },
     ],
     following: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Follow",
+        ref: "User",
       },
     ],
     notifications: [
