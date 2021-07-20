@@ -164,3 +164,31 @@ exports.followUser = async (req, res) => {
     return res.status(500).send({ err });
   }
 };
+
+exports.unfollowUser = async (req, res) => {
+  const { userId } = req.body;
+  const id = String(req.user.id);
+  try {
+    const user = await User.findById(userId);
+    const currentUser = await User.findById(id);
+    if (!user) return res.status(404).send({ err: "User not found" });
+    if (userId === id)
+      return res.status(400).send({ err: "Cannot unfollow yourself" });
+    if (!user.followers.includes(id))
+      return res.status(400).send({ err: "Already unfollowing the user" });
+    await currentUser.updateOne({
+      $pull: {
+        following: userId,
+      },
+    });
+    await user.updateOne({
+      $pull: {
+        followers: id,
+      },
+    });
+    res.status(200).send({ msg: "User unfollowed" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
