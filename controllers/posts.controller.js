@@ -6,7 +6,7 @@ const {
 const fs = require("fs");
 
 exports.getPosts = async (req, res) => {
-  let postLimit = 2;
+  let postLimit = 10;
   const page = req.query.page ? req.query.page : 1;
   const skip = (page - 1) * postLimit;
   try {
@@ -57,8 +57,13 @@ exports.postPost = async (req, res) => {
       image: imageUrl,
       imagePublicId,
     });
-    const data = await post.save();
-    return res.status(201).json({ data });
+    let data = await post.save();
+    Post.populate(data, { path: "user", select: "name image" }, (err, post) => {
+      if (err) {
+        return res.status(500).send({ err });
+      }
+      return res.status(201).json({ data: post });
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });

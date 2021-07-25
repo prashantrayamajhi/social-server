@@ -35,9 +35,12 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { email, username, name, password, gender } = req.body;
-    if (!email.trim()) {
+    const { email, username, name, address, password, gender } = req.body;
+    if (!email) {
       return res.status(400).send({ err: "Email cannot be empty" });
+    }
+    if (!address.trim()) {
+      return res.status(400).send({ err: "Address cannot be empty" });
     }
     if (!username.trim()) {
       return res.status(400).send({ err: "Username cannot be empty" });
@@ -56,7 +59,7 @@ exports.signup = async (req, res) => {
     if (emailExists)
       return res.status(409).send({ err: "Email already registered" });
     if (usernameExists) return res.status(409).send({ err: "Username taken" });
-    const user = new User({ email, username, name, password, gender });
+    const user = new User({ email, username, name, password, gender, address });
     const token = generateVerificationToken(4);
     await sendVerificationToken({
       to: user.email,
