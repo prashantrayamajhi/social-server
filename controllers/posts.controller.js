@@ -68,12 +68,16 @@ exports.postPost = async (req, res) => {
       },
     });
 
-    Post.populate(data, { path: "user", select: "name image" }, (err, post) => {
-      if (err) {
-        return res.status(500).send({ err });
+    Post.populate(
+      data,
+      { path: "user", select: "name image gender" },
+      (err, post) => {
+        if (err) {
+          return res.status(500).send({ err });
+        }
+        return res.status(201).json({ data: post });
       }
-      return res.status(201).json({ data: post });
-    });
+    );
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
