@@ -35,6 +35,20 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.getProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findById(id);
+    if (!user) return res.status(404).send({ err: "Profile not found" });
+    if (String(user._id) !== String(req.user._id))
+      return res.status(401).send({ err: "Cannot get profile" });
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
 exports.searchUsers = async (req, res) => {
   const { term } = req.params;
   try {

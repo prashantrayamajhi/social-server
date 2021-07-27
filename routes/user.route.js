@@ -5,6 +5,12 @@ const passport = require("passport");
 
 router.get("/search", controller.getUsers);
 
+router.get(
+  "/profile/:id",
+  passport.authenticate("jwt", { session: false }),
+  controller.getProfile
+);
+
 router.get("/search/:term", controller.searchUsers);
 
 router.patch(
