@@ -1,10 +1,11 @@
 const Post = require("./../models/Post.model");
+const User = require("./../models/User.model");
+
 const {
   uploadToCloudinary,
   deleteFromCloudinary,
 } = require("./../utils/cloudinary");
 const fs = require("fs");
-const { match } = require("assert");
 
 exports.getPosts = async (req, res) => {
   let postLimit = 10;
@@ -13,7 +14,7 @@ exports.getPosts = async (req, res) => {
   try {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
-      .populate("user", "name image")
+      .populate("user", "name image gender")
       .populate("likes", "name image")
       .skip(skip)
       .limit(postLimit)
@@ -36,6 +37,7 @@ exports.postPost = async (req, res) => {
   }
   let imageUrl, imagePublicId;
   try {
+    const user = await User.findById(req.user._id);
     if (!title && !req.file) {
       return res.status(400).send({ err: "Cannot create an empty post" });
     }
@@ -54,11 +56,18 @@ exports.postPost = async (req, res) => {
     const post = new Post({
       title,
       anonymous,
-      user: req.user._id,
+      user: user._id,
       image: imageUrl,
       imagePublicId,
     });
     let data = await post.save();
+
+    await user.updateOne({
+      $push: {
+        posts: data._id,
+      },
+    });
+
     Post.populate(data, { path: "user", select: "name image" }, (err, post) => {
       if (err) {
         return res.status(500).send({ err });

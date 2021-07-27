@@ -14,6 +14,8 @@ exports.getUsers = async (req, res) => {
         "name",
         "username",
         "image",
+        "bio",
+        "address",
         "github",
         "linkedin",
         "instagram",
@@ -38,7 +40,13 @@ exports.getUsers = async (req, res) => {
 exports.getProfile = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await Users.findById(id);
+    const user = await Users.findById(id).populate({
+      path: "posts",
+      populate: {
+        path: "user",
+      },
+    });
+
     if (!user) return res.status(404).send({ err: "Profile not found" });
     if (String(user._id) !== String(req.user._id))
       return res.status(401).send({ err: "Cannot get profile" });
@@ -75,6 +83,8 @@ exports.updateUser = async (req, res) => {
   let {
     name,
     password,
+    address,
+    bio,
     github,
     linkedin,
     instagram,
@@ -119,6 +129,8 @@ exports.updateUser = async (req, res) => {
       {
         name,
         password,
+        address,
+        bio,
         github,
         linkedin,
         instagram,
