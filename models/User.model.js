@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema(
     bio: {
       type: String,
       trim: true,
+      max: 80,
     },
     gender: {
       type: String,

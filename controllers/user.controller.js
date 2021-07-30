@@ -77,30 +77,35 @@ exports.searchUsers = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateUserGeneral = async (req, res) => {
   const { id } = req.params;
 
   let {
     name,
-    password,
     address,
-    bio,
-    github,
-    linkedin,
-    instagram,
-    youtube,
-    website,
-    facebook,
+    gender,
+    dateOfBirth,
+    // password,
+    // bio,
+    // github,
+    // linkedin,
+    // instagram,
+    // youtube,
+    // website,
+    // facebook,
   } = req.body;
+  // if (password) password = password.trim();
 
   if (name) name = name.trim();
-  if (password) password = password.trim();
+  if (address) address = address.trim();
 
   password = bcrypt.hashSync(password, 10);
 
   if (!name) return res.status(400).send({ err: "Name cannot be empty" });
-  if (!password)
-    return res.status(400).send({ err: "Password cannot be empty" });
+  if (!address) return res.status(400).send({ err: "Address cannot be empty" });
+
+  // if (!password)
+  //   return res.status(400).send({ err: "Password cannot be empty" });
 
   let imageUrl;
   let imagePublicId;
@@ -139,6 +144,69 @@ exports.updateUser = async (req, res) => {
         facebook,
         image: imageUrl,
         imagePublicId,
+      }
+    );
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
+
+exports.updateGeneralSettings = async (req, res) => {
+  const id = String(req.params.id);
+  if (id !== String(req.user._id)) {
+    return res.status(401).send({ msg: "Not authorized" });
+  }
+  let { name, address, gender, dateOfBirth } = req.body;
+  if (!name) return res.status(400).send({ err: "Name cannot be empty" });
+  if (!address) return res.status(400).send({ err: "Address cannot be empty" });
+  if (!gender) return res.status(400).send({ err: "Gender cannot be empty" });
+  // if (!dateOfBirth)
+  //   return res.status(400).send({ err: "Date of birth cannot be empty" });
+  try {
+    const data = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        name,
+        address,
+        gender,
+        dateOfBirth,
+      }
+    );
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
+
+exports.updateProfileSettings = async (req, res) => {
+  const id = String(req.params.id);
+  if (id !== String(req.user._id)) {
+    return res.status(401).send({ msg: "Not authorized" });
+  }
+  let { bio, website, github, instagram, linkedin, facebook, youtube } =
+    req.body;
+
+  if (bio) {
+    if (bio.trim().length > 80) {
+      return res
+        .status(400)
+        .send({ err: "Bio cannot have more the 80 letters" });
+    }
+  }
+  try {
+    const data = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        bio,
+        website,
+        github,
+        instagram,
+        linkedin,
+        facebook,
+        youtube,
       }
     );
     return res.status(200).json({ data });

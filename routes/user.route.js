@@ -13,11 +13,23 @@ router.get(
 
 router.get("/search/:term", controller.searchUsers);
 
+// router.patch(
+//   "/profile/:id",
+//   passport.authenticate("jwt", { session: false }),
+//   upload.single("image"),
+//   controller.updateUser
+// );
+
 router.patch(
-  "/profile/:id",
+  "/profile/general/:id",
   passport.authenticate("jwt", { session: false }),
-  upload.single("image"),
-  controller.updateUser
+  controller.updateGeneralSettings
+);
+
+router.patch(
+  "/profile/profile/:id",
+  passport.authenticate("jwt", { session: false }),
+  controller.updateProfileSettings
 );
 
 router.delete(
