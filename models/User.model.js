@@ -49,6 +49,9 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    dateOfBirth: {
+      type: Date,
+    },
     isActivated: {
       type: Boolean,
       default: false,

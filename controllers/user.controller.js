@@ -85,8 +85,7 @@ exports.updateGeneralSettings = async (req, res) => {
   if (!name) return res.status(400).send({ err: "Name cannot be empty" });
   if (!address) return res.status(400).send({ err: "Address cannot be empty" });
   if (!gender) return res.status(400).send({ err: "Gender cannot be empty" });
-  // if (!dateOfBirth)
-  //   return res.status(400).send({ err: "Date of birth cannot be empty" });
+
   try {
     const data = await User.findByIdAndUpdate(
       { _id: req.user._id },
