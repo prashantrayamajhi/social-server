@@ -5,20 +5,15 @@ const passport = require("passport");
 
 router.get("/search", controller.getUsers);
 
+// router.get("/public/profile/:id", controller.getProfile);
+
 router.get(
   "/profile/:id",
-  passport.authenticate("jwt", { session: false }),
+  // passport.authenticate("jwt", { session: false }),
   controller.getProfile
 );
 
 router.get("/search/:term", controller.searchUsers);
-
-// router.patch(
-//   "/profile/:id",
-//   passport.authenticate("jwt", { session: false }),
-//   upload.single("image"),
-//   controller.updateUser
-// );
 
 router.patch(
   "/profile/general/:id",

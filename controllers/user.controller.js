@@ -38,18 +38,18 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getProfile = async (req, res) => {
-  const { id } = req.params;
+  let { id } = req.params;
   try {
-    const user = await Users.findById(id).populate({
+    let user = await Users.findById(id).populate({
       path: "posts",
+      select:
+        "-messages, -password -notification -isActivated -comments -email",
       populate: {
         path: "user",
+        select: "name image gender",
       },
     });
-
     if (!user) return res.status(404).send({ err: "Profile not found" });
-    if (String(user._id) !== String(req.user._id))
-      return res.status(401).send({ err: "Cannot get profile" });
     return res.status(200).json({ data: user });
   } catch (err) {
     console.log(err);
@@ -70,82 +70,6 @@ exports.searchUsers = async (req, res) => {
       $or: [{ name: term }, { username: term }],
     }).countDocuments();
     const data = { users, userCount };
-    return res.status(200).json({ data });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send(err);
-  }
-};
-
-exports.updateUserGeneral = async (req, res) => {
-  const { id } = req.params;
-
-  let {
-    name,
-    address,
-    gender,
-    dateOfBirth,
-    // password,
-    // bio,
-    // github,
-    // linkedin,
-    // instagram,
-    // youtube,
-    // website,
-    // facebook,
-  } = req.body;
-  // if (password) password = password.trim();
-
-  if (name) name = name.trim();
-  if (address) address = address.trim();
-
-  password = bcrypt.hashSync(password, 10);
-
-  if (!name) return res.status(400).send({ err: "Name cannot be empty" });
-  if (!address) return res.status(400).send({ err: "Address cannot be empty" });
-
-  // if (!password)
-  //   return res.status(400).send({ err: "Password cannot be empty" });
-
-  let imageUrl;
-  let imagePublicId;
-  try {
-    const user = await Users.findOne({ _id: id });
-    if (!user) return res.status(404).send({ err: "User not found" });
-    if (String(user._id) !== String(req.user._id))
-      return res.status(401).send({ err: "Cannot update profile" });
-    if (req.file) {
-      const image = await uploadToCloudinary("uploads/" + req.file.filename);
-      const path = req.file.path;
-      fs.unlinkSync(path);
-      if (!image.secure_url) {
-        return res.status(500).send({ err: "Cannot upload to cloudinary" });
-      }
-      imageUrl = image.secure_url;
-      imagePublicId = image.public_id;
-    }
-
-    if (req.body.image) {
-      imageUrl = req.body.image;
-    }
-
-    const data = await User.findOneAndUpdate(
-      { _id: user._id },
-      {
-        name,
-        password,
-        address,
-        bio,
-        github,
-        linkedin,
-        instagram,
-        youtube,
-        website,
-        facebook,
-        image: imageUrl,
-        imagePublicId,
-      }
-    );
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
