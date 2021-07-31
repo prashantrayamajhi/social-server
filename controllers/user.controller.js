@@ -42,8 +42,7 @@ exports.getProfile = async (req, res) => {
   try {
     let user = await Users.findById(id).populate({
       path: "posts",
-      select:
-        "-messages, -password -notification -isActivated -comments -email",
+      select: "-messages -password -notification -isActivated -comments -email",
       populate: {
         path: "user",
         select: "name image gender",

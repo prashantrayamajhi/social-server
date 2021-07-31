@@ -31,7 +31,7 @@ exports.getPosts = async (req, res) => {
 };
 
 exports.postPost = async (req, res) => {
-  let { title, anonymous } = req.body;
+  let { title } = req.body;
   if (title) {
     title = title.trim();
   }
@@ -55,7 +55,6 @@ exports.postPost = async (req, res) => {
     }
     const post = new Post({
       title,
-      anonymous,
       user: user._id,
       image: imageUrl,
       imagePublicId,
@@ -87,7 +86,7 @@ exports.postPost = async (req, res) => {
 exports.updatePostById = async (req, res) => {
   const postId = req.params.id;
   const userId = String(req.user._id);
-  let { title, anonymous } = req.body;
+  let { title } = req.body;
   if (title) {
     title = title.trim();
   }
@@ -100,7 +99,6 @@ exports.updatePostById = async (req, res) => {
     if (userId !== String(post.user))
       return res.status(401).send({ msg: "Cannot update post" });
     post.title = title;
-    post.anonymous = anonymous;
     const data = await post.save();
     return res.status(200).json({ data });
   } catch (err) {

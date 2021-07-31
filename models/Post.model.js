@@ -14,7 +14,6 @@ const postSchema = Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    anonymous: { type: Boolean, default: false },
     likes: [
       {
         type: Schema.Types.ObjectId,
