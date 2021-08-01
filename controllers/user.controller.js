@@ -141,6 +141,36 @@ exports.updateProfileSettings = async (req, res) => {
   }
 };
 
+exports.updateProfilePicture = async (req, res) => {
+  const id = String(req.params.id);
+  if (id !== String(req.user._id)) {
+    return res.status(401).send({ msg: "Not authorized" });
+  }
+  if (!req.file)
+    return res.status(400).send({ err: "Profile picture cannot be empty" });
+  try {
+    const uploadImage = await uploadToCloudinary(
+      "uploads/" + req.file.filename
+    );
+    const path = req.file.path;
+    fs.unlinkSync(path);
+    if (!uploadImage.secure_url) {
+      return res.status(500).send({ err: "Cannot upload to cloudinary" });
+    }
+    await User.findByIdAndUpdate(
+      { _id: id },
+      {
+        image: uploadImage.secure_url,
+        imagePublicId: uploadImage.public_id,
+      }
+    );
+    return res.status(200).send({ msg: "Profile picture updated" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
