@@ -157,14 +157,15 @@ exports.updateProfilePicture = async (req, res) => {
     if (!uploadImage.secure_url) {
       return res.status(500).send({ err: "Cannot upload to cloudinary" });
     }
-    await User.findByIdAndUpdate(
+    const data = await User.findByIdAndUpdate(
       { _id: id },
       {
         image: uploadImage.secure_url,
         imagePublicId: uploadImage.public_id,
-      }
+      },
+      { new: true }
     );
-    return res.status(200).send({ msg: "Profile picture updated" });
+    return res.status(200).send({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
