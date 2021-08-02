@@ -7,6 +7,10 @@ router.get("/search", controller.getUsers);
 
 router.get("/profile/:id", controller.getProfile);
 
+router.get("/followers/:id", controller.getFollowers);
+
+router.get("/following/:id", controller.getFollowing);
+
 router.get("/search/:term", controller.searchUsers);
 
 router.patch(
