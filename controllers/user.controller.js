@@ -168,7 +168,7 @@ exports.updateProfilePicture = async (req, res) => {
         imagePublicId: uploadImage.public_id,
       },
       { new: true }
-    );
+    ).populate("posts");
     return res.status(200).send({ data });
   } catch (err) {
     console.log(err);
