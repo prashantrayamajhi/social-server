@@ -210,17 +210,32 @@ exports.followUser = async (req, res) => {
       return res.status(400).send({ err: "Cannot follow yourself" });
     if (user.followers.includes(id))
       return res.status(400).send({ err: "Already following the user" });
+
     await currentUser.updateOne({
       $push: {
         following: userId,
       },
     });
-    await user.updateOne({
-      $push: {
-        followers: id,
+
+    const data = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          followers: id,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
+      path: "posts",
+      select: "-messages -password -notification -isActivated -comments",
+      populate: {
+        path: "user",
+        select: "name image gender followers following",
       },
     });
-    res.status(200).send({ msg: "User followed" });
+    return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
@@ -238,17 +253,32 @@ exports.unfollowUser = async (req, res) => {
       return res.status(400).send({ err: "Cannot unfollow yourself" });
     if (!user.followers.includes(id))
       return res.status(400).send({ err: "Already unfollowing the user" });
+
     await currentUser.updateOne({
       $pull: {
         following: userId,
       },
     });
-    await user.updateOne({
-      $pull: {
-        followers: id,
+
+    const data = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $pull: {
+          followers: id,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
+      path: "posts",
+      select: "-messages -password -notification -isActivated -comments",
+      populate: {
+        path: "user",
+        select: "name image gender followers following",
       },
     });
-    res.status(200).send({ msg: "User unfollowed" });
+    return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });
