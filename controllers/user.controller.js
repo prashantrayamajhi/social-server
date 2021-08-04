@@ -292,7 +292,7 @@ exports.getFollowers = async (req, res) => {
     if (!user) return res.status(404).send({ err: "User not found" });
     const data = await User.findOne({ _id: id }).select("followers").populate({
       path: "followers",
-      select: "name gender image username",
+      select: "name gender image username following followers",
     });
     return res.status(200).json({ data });
   } catch (err) {
@@ -308,7 +308,7 @@ exports.getFollowing = async (req, res) => {
     if (!user) return res.status(404).send({ err: "User not found" });
     const data = await User.findOne({ _id: id }).select("following").populate({
       path: "following",
-      select: "name gender image username",
+      select: "name gender image username following followers",
     });
     return res.status(200).json({ data });
   } catch (err) {
