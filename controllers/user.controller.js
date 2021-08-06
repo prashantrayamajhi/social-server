@@ -83,6 +83,15 @@ exports.updateGeneralSettings = async (req, res) => {
     return res.status(401).send({ msg: "Not authorized" });
   }
   let { name, address, gender, dateOfBirth } = req.body;
+  if (name) {
+    name = name.trim();
+  }
+  if (gender) {
+    gender = gender.trim();
+  }
+  if (address) {
+    address = address.trim();
+  }
   if (!name) return res.status(400).send({ err: "Name cannot be empty" });
   if (!address) return res.status(400).send({ err: "Address cannot be empty" });
   if (!gender) return res.status(400).send({ err: "Gender cannot be empty" });
@@ -116,10 +125,26 @@ exports.updateProfileSettings = async (req, res) => {
 
   if (bio) {
     if (bio.trim().length > 80) {
-      return res
-        .status(400)
-        .send({ err: "Bio cannot have more the 80 letters" });
+      return res.status(400).send({ err: "Bio too long" });
     }
+  }
+  if (website) {
+    website = website.trim();
+  }
+  if (github) {
+    github = github.trim();
+  }
+  if (instagram) {
+    instagram = instagram.trim();
+  }
+  if (linkedin) {
+    linkedin = linkedin.trim();
+  }
+  if (facebook) {
+    facebook = facebook.trim();
+  }
+  if (youtube) {
+    youtube = youtube.trim();
   }
   try {
     const data = await User.findByIdAndUpdate(

@@ -42,7 +42,7 @@ exports.postPost = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!title && !req.file) {
-      return res.status(400).send({ err: "Cannot create an empty post" });
+      return res.status(400).send({ error: "Cannot create an empty post" });
     }
     if (req.file) {
       const uploadImage = await uploadToCloudinary(
