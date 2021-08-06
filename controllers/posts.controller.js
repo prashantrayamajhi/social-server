@@ -112,9 +112,9 @@ exports.deletePostById = async (req, res) => {
   const userId = String(req.user._id);
   try {
     const post = await Post.findOne({ _id: postId });
-    if (!post) return res.status(404).send({ msg: "Post not found" });
+    if (!post) return res.status(404).send({ error: "Post not found" });
     if (userId !== String(post.user))
-      return res.status(401).send({ msg: "Cannot delete post" });
+      return res.status(401).send({ error: "Cannot delete post" });
     if (post.imagePublicId) {
       deleteFromCloudinary(post.imagePublicId);
     }
