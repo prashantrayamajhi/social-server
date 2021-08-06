@@ -99,11 +99,11 @@ exports.updatePostById = async (req, res) => {
   try {
     const post = await Post.findOne({ _id: postId });
     if (!post.image && !title) {
-      return res.status(400).send({ err: "Cannot create an empty post" });
+      return res.status(400).send({ error: "Cannot create an empty post" });
     }
     if (!post) return res.status(404).send({ msg: "Post not found" });
     if (userId !== String(post.user))
-      return res.status(401).send({ msg: "Cannot update post" });
+      return res.status(401).send({ error: "Cannot update post" });
     post.title = title;
     const data = await post.save();
     return res.status(200).json({ data });
