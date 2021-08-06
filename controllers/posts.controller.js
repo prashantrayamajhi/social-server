@@ -34,6 +34,9 @@ exports.postPost = async (req, res) => {
   let { title } = req.body;
   if (title) {
     title = title.trim();
+    if (title.length > 400) {
+      return res.status(400).send({ error: "Title too long" });
+    }
   }
   let imageUrl, imagePublicId;
   try {
@@ -48,7 +51,7 @@ exports.postPost = async (req, res) => {
       const path = req.file.path;
       fs.unlinkSync(path);
       if (!uploadImage.secure_url) {
-        return res.status(500).send({ err: "Cannot upload to cloudinary" });
+        return res.status(500).send({ error: "Cannot upload to cloudinary" });
       }
       imageUrl = uploadImage.secure_url;
       imagePublicId = uploadImage.public_id;
@@ -89,6 +92,9 @@ exports.updatePostById = async (req, res) => {
   let { title } = req.body;
   if (title) {
     title = title.trim();
+    if (title.length > 400) {
+      return res.status(400).send({ error: "Title too long" });
+    }
   }
   try {
     const post = await Post.findOne({ _id: postId });
