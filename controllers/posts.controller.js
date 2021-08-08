@@ -35,9 +35,12 @@ exports.getPostsByUserId = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) return res.status(404).send({ error: "Posts not found" });
-    const data = await Post.find().where({
-      user: id,
-    });
+    const data = await Post.find()
+      .where({
+        user: id,
+      })
+      .populate("user", "name image gender")
+      .populate("likes", "name image");
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
