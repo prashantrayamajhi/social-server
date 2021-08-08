@@ -1,4 +1,5 @@
 const Post = require("./../models/Post.model");
+const Comment = require("./../models/Comment.model");
 const User = require("./../models/User.model");
 const ObjectId = require("mongoose").Types.ObjectId;
 
@@ -16,7 +17,6 @@ exports.getPosts = async (req, res) => {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate("user", "name image gender")
-      // .populate("likes", "name image")
       .skip(skip)
       .limit(postLimit)
       .sort({
@@ -38,7 +38,13 @@ exports.getPostById = async (req, res) => {
   try {
     const data = await Post.findById(id)
       .populate("user", "name image gender")
-      .populate("comment");
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "name image gender",
+        },
+      });
     if (!data) return res.status(404).send({ error: "Post not found" });
 
     return res.status(200).json({ data });
@@ -203,6 +209,49 @@ exports.like = async (req, res) => {
       ).populate("user", "name image gender");
       return res.status(200).json({ data });
     }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
+exports.comment = async (req, res) => {
+  const { postId, text } = req.body;
+
+  const userId = req.user._id;
+  if (!userId) return res.status(404).send({ error: "User not found" });
+  try {
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).send({ error: "Post not found" });
+    const comment = new Comment({
+      comment: text,
+      post: postId,
+      user: userId,
+    });
+    const savedComment = await comment.save();
+    const data = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: {
+          comments: savedComment._id,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "name image gender",
+        },
+      })
+      .populate({
+        path: "user",
+        select: "name image gender",
+      });
+    return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     return res.status(500).send({ err });

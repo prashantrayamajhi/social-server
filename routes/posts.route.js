@@ -3,11 +3,23 @@ const controller = require("../controllers/posts.controller");
 const passport = require("passport");
 const upload = require("./../middleware/multer");
 
-router.get("/", controller.getPosts);
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  controller.getPosts
+);
 
-router.get("/:id", controller.getPostById);
+router.get(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  controller.getPostById
+);
 
-router.get("/userPosts/:id", controller.getPostsByUserId);
+router.get(
+  "/userPosts/:id",
+  passport.authenticate("jwt", { session: false }),
+  controller.getPostsByUserId
+);
 
 router.get(
   "/like/:postId",
@@ -32,6 +44,12 @@ router.delete(
   "/:id",
   passport.authenticate("jwt", { session: false }),
   controller.deletePostById
+);
+
+router.post(
+  "/comment",
+  passport.authenticate("jwt", { session: false }),
+  controller.comment
 );
 
 module.exports = router;
