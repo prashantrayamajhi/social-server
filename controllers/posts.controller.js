@@ -125,6 +125,7 @@ exports.updatePostById = async (req, res) => {
       path: "user",
       select: "name image gender",
     });
+
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
