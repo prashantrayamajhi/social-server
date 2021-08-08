@@ -5,6 +5,8 @@ const upload = require("./../middleware/multer");
 
 router.get("/", controller.getPosts);
 
+router.get("/:id", controller.getPostById);
+
 router.get("/userPosts/:id", controller.getPostsByUserId);
 
 router.get(

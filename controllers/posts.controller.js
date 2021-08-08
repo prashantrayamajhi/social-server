@@ -1,5 +1,6 @@
 const Post = require("./../models/Post.model");
 const User = require("./../models/User.model");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const {
   uploadToCloudinary,
@@ -22,6 +23,28 @@ exports.getPosts = async (req, res) => {
         createdAt: -1,
       });
     const data = { posts, postsCount };
+
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
+exports.getPostById = async (req, res) => {
+  const { id } = req.params;
+  if (!ObjectId.isValid(id))
+    return res.status(404).send({ error: "Post not found" });
+  try {
+    const data = await Post.findById(id)
+      .populate("user", "name image gender")
+      .populate("likes", "name image gender username")
+      .populate("comment");
+    if (!data) return res.status(404).send({ error: "Post not found" });
+    // const data = await Post.findById(id)
+    //   .populate("user", "name image gender")
+    //   .populate("likes", "name image gender username")
+    //   .populate("comments");
 
     return res.status(200).json({ data });
   } catch (err) {
