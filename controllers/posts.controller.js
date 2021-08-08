@@ -38,13 +38,8 @@ exports.getPostById = async (req, res) => {
   try {
     const data = await Post.findById(id)
       .populate("user", "name image gender")
-      .populate("likes", "name image gender username")
       .populate("comment");
     if (!data) return res.status(404).send({ error: "Post not found" });
-    // const data = await Post.findById(id)
-    //   .populate("user", "name image gender")
-    //   .populate("likes", "name image gender username")
-    //   .populate("comments");
 
     return res.status(200).json({ data });
   } catch (err) {
