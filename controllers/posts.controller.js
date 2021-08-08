@@ -15,7 +15,7 @@ exports.getPosts = async (req, res) => {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate("user", "name image gender")
-      .populate("likes", "name image")
+      // .populate("likes", "name image")
       .skip(skip)
       .limit(postLimit)
       .sort({
