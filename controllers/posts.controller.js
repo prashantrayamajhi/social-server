@@ -30,6 +30,21 @@ exports.getPosts = async (req, res) => {
   }
 };
 
+exports.getPostsByUserId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).send({ error: "Posts not found" });
+    const data = await Post.find().where({
+      user: id,
+    });
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
 exports.postPost = async (req, res) => {
   let { title } = req.body;
   if (title) {
@@ -104,8 +119,10 @@ exports.updatePostById = async (req, res) => {
     if (!post) return res.status(404).send({ msg: "Post not found" });
     if (userId !== String(post.user))
       return res.status(401).send({ error: "Cannot update post" });
-    post.title = title;
-    const data = await post.save();
+    const data = await Post.findByIdAndUpdate(postId, { title }).populate({
+      path: "user",
+      select: "name image gender",
+    });
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
