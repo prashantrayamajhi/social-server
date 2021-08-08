@@ -158,21 +158,32 @@ exports.like = async (req, res) => {
   try {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).send({ err: "Post not found" });
-    // unlike the post if the post is already liked by the user
     if (post.likes.includes(userId)) {
-      await post.updateOne({
-        $pull: {
-          likes: userId,
+      const data = await Post.findByIdAndUpdate(
+        postId,
+        {
+          $pull: {
+            likes: userId,
+          },
         },
-      });
-      return res.status(200).send({ msg: "Post unliked" });
+        {
+          new: true,
+        }
+      ).populate("user", "name image gender");
+      return res.status(200).json({ data });
     } else {
-      await post.updateOne({
-        $push: {
-          likes: userId,
+      const data = await Post.findByIdAndUpdate(
+        postId,
+        {
+          $push: {
+            likes: userId,
+          },
         },
-      });
-      return res.status(200).send({ msg: "Post liked" });
+        {
+          new: true,
+        }
+      ).populate("user", "name image gender");
+      return res.status(200).json({ data });
     }
   } catch (err) {
     console.log(err);
