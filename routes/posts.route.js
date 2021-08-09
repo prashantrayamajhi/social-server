@@ -52,4 +52,10 @@ router.post(
   controller.comment
 );
 
+router.get(
+  "/comment/:postId/:commentId/:id",
+  passport.authenticate("jwt", { session: false }),
+  controller.deleteComment
+);
+
 module.exports = router;

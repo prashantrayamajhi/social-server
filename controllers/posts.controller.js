@@ -250,7 +250,6 @@ exports.like = async (req, res) => {
 
 exports.comment = async (req, res) => {
   const { postId, text } = req.body;
-
   const userId = req.user._id;
   if (!userId) return res.status(404).send({ error: "User not found" });
 
@@ -272,6 +271,50 @@ exports.comment = async (req, res) => {
       {
         $push: {
           comments: savedComment._id,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate({
+        path: "comments",
+        options: {
+          sort: {
+            createdAt: -1,
+          },
+        },
+        populate: {
+          path: "user",
+          select: "name image gender",
+        },
+      })
+      .populate({
+        path: "user",
+        select: "name image gender",
+      });
+    return res.status(200).json({ data });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ err });
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  const { postId, commentId, id } = req.params;
+
+  const userId = req.user._id;
+  if (!userId) return res.status(404).send({ error: "User not found" });
+  if (String(userId) !== String(id))
+    return res.status(401).send({ error: "Not authorized" });
+
+  try {
+    const comment = await Comment.findByIdAndDelete(commentId);
+    const data = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $pull: {
+          comments: comment._id,
         },
       },
       {
