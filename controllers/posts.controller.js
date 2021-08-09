@@ -173,7 +173,9 @@ exports.deletePostById = async (req, res) => {
     if (post.imagePublicId) {
       deleteFromCloudinary(post.imagePublicId);
     }
-    await Post.findByIdAndDelete({ _id: postId });
+    const del = await Post.findByIdAndDelete({ _id: postId });
+    await Comment.deleteMany({ post: del._id });
+
     return res.status(200).send({ msg: "Post deleted" });
   } catch (err) {
     console.log(err);
