@@ -40,6 +40,11 @@ exports.getPostById = async (req, res) => {
       .populate("user", "name image gender")
       .populate({
         path: "comments",
+        options: {
+          sort: {
+            createdAt: -1,
+          },
+        },
         populate: {
           path: "user",
           select: "name image gender",
@@ -193,7 +198,20 @@ exports.like = async (req, res) => {
         {
           new: true,
         }
-      ).populate("user", "name image gender");
+      )
+        .populate("user", "name image gender")
+        .populate({
+          path: "comments",
+          options: {
+            sort: {
+              createdAt: -1,
+            },
+          },
+          populate: {
+            path: "user",
+            select: "name image gender",
+          },
+        });
       return res.status(200).json({ data });
     } else {
       const data = await Post.findByIdAndUpdate(
@@ -206,7 +224,20 @@ exports.like = async (req, res) => {
         {
           new: true,
         }
-      ).populate("user", "name image gender");
+      )
+        .populate("user", "name image gender")
+        .populate({
+          path: "comments",
+          options: {
+            sort: {
+              createdAt: -1,
+            },
+          },
+          populate: {
+            path: "user",
+            select: "name image gender",
+          },
+        });
       return res.status(200).json({ data });
     }
   } catch (err) {
@@ -220,6 +251,9 @@ exports.comment = async (req, res) => {
 
   const userId = req.user._id;
   if (!userId) return res.status(404).send({ error: "User not found" });
+
+  if (!text.trim() || !text.trim())
+    return res.status(400).send({ error: "Cannot post empty comment" });
   try {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).send({ error: "Post not found" });
@@ -242,6 +276,11 @@ exports.comment = async (req, res) => {
     )
       .populate({
         path: "comments",
+        options: {
+          sort: {
+            createdAt: -1,
+          },
+        },
         populate: {
           path: "user",
           select: "name image gender",
