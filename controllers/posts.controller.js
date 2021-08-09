@@ -256,6 +256,8 @@ exports.comment = async (req, res) => {
 
   if (!text.trim() || !text.trim())
     return res.status(400).send({ error: "Cannot post empty comment" });
+  if (text.trim().length > 200)
+    return res.status(400).send({ error: "Comment too long" });
   try {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).send({ error: "Post not found" });
