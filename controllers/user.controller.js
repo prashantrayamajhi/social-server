@@ -40,14 +40,18 @@ exports.getUsers = async (req, res) => {
 exports.getProfile = async (req, res) => {
   let { id } = req.params;
   try {
-    let user = await Users.findById(id).populate({
-      path: "posts",
-      select: "-messages -password -notification -isActivated -comments -email",
-      populate: {
-        path: "user",
-        select: "name image gender posts",
-      },
-    });
+    let user = await Users.findById(id)
+      .select([
+        "-messages",
+        "-password",
+        "-notifications",
+        "-isActivated",
+        "-comments",
+        "-email",
+      ])
+      .populate({
+        path: "posts",
+      });
     if (!user) return res.status(404).send({ err: "Profile not found" });
     return res.status(200).json({ data: user });
   } catch (err) {
@@ -62,9 +66,9 @@ exports.searchUsers = async (req, res) => {
     const users = await Users.find({
       $or: [{ name: term }, { username: term }],
     })
-      .select(["name", "username", "image", "followers", "following"])
-      .populate("followers", "name image")
-      .populate("following", "name image");
+      .select(["name", "username", "image", "followers", "following", "gender"])
+      .populate("followers", "name image gender")
+      .populate("following", "name image gender");
     const userCount = await Users.find({
       $or: [{ name: term }, { username: term }],
     }).countDocuments();
@@ -215,14 +219,6 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.deleteProfilePicture = async (req, res) => {
-  try {
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send({ err });
-  }
-};
-
 exports.followUser = async (req, res) => {
   const { userId } = req.body;
   const id = String(req.user.id);
@@ -253,7 +249,6 @@ exports.followUser = async (req, res) => {
       }
     ).populate({
       path: "posts",
-      select: "-messages -password -notification -isActivated -comments",
       populate: {
         path: "user",
         select: "name image gender followers following",
@@ -296,7 +291,6 @@ exports.unfollowUser = async (req, res) => {
       }
     ).populate({
       path: "posts",
-      select: "-messages -password -notification -isActivated -comments",
       populate: {
         path: "user",
         select: "name image gender followers following",
