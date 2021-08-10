@@ -12,13 +12,13 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).send({ err: "Invalid credentials" });
-    const isValidPassword = bcrypt.compareSync(password, user.password);
-    if (!isValidPassword)
-      return res.status(401).send({ err: "Invalid credentials" });
     if (!user.isActivated)
       return res
         .status(401)
-        .send({ err: "Please verify you account through mail" });
+        .send({ err: "Please verify your account through mail" });
+    const isValidPassword = bcrypt.compareSync(password, user.password);
+    if (!isValidPassword)
+      return res.status(401).send({ err: "Invalid credentials" });
     const token = generateToken(user, process.env.JWT_SECRET, "1d");
     const data = {
       token,
@@ -55,9 +55,13 @@ exports.signup = async (req, res) => {
       return res.status(400).send({ err: "Password cannot be empty" });
     }
     const emailExists = await User.findOne({ email });
-    const usernameExists = await User.findOne({ username });
-    if (emailExists)
+    if (!emailExists.isActivated) {
+      return res.status(409).send({ err: "verify" });
+    }
+    if (emailExists && emailExists.isActivated) {
       return res.status(409).send({ err: "Email already registered" });
+    }
+    const usernameExists = await User.findOne({ username });
     if (usernameExists) return res.status(409).send({ err: "Username taken" });
     const user = new User({ email, username, name, password, gender, address });
     const token = generateVerificationToken(4);
