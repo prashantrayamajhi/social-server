@@ -68,7 +68,10 @@ exports.getPostsByUserId = async (req, res) => {
       .where({
         user: id,
       })
-      .populate("user", "name image gender");
+      .populate("user", "name image gender")
+      .sort({
+        createdAt: -1,
+      });
     return res.status(200).json({ data });
   } catch (err) {
     console.log(err);
