@@ -55,8 +55,16 @@ exports.signup = async (req, res) => {
       return res.status(400).send({ err: "Password cannot be empty" });
     }
     const emailExists = await User.findOne({ email });
-    if (!emailExists.isActivated) {
-      return res.status(409).send({ err: "verify" });
+    if (emailExists && !emailExists.isActivated) {
+      const token = await Token.findOne({
+        user: emailExists._id,
+      });
+      if (token) {
+        await Token.findOneAndDelete({
+          user: emailExists._id,
+        });
+      }
+      await User.findByIdAndDelete(emailExists._id);
     }
     if (emailExists && emailExists.isActivated) {
       return res.status(409).send({ err: "Email already registered" });
