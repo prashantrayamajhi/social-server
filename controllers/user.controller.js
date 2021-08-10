@@ -5,7 +5,6 @@ const {
 } = require("./../utils/cloudinary");
 const fs = require("fs");
 const User = require("./../models/User.model");
-const bcrypt = require("bcryptjs");
 const moment = require("moment");
 
 exports.getUsers = async (req, res) => {
@@ -46,7 +45,7 @@ exports.getProfile = async (req, res) => {
       select: "-messages -password -notification -isActivated -comments -email",
       populate: {
         path: "user",
-        select: "name image gender",
+        select: "name image gender posts",
       },
     });
     if (!user) return res.status(404).send({ err: "Profile not found" });
