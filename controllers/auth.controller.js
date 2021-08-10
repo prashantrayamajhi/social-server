@@ -35,7 +35,16 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { email, username, name, address, password, gender } = req.body;
+    const {
+      email,
+      username,
+      name,
+      address,
+      password,
+      gender,
+      confirmPassword,
+    } = req.body;
+
     if (!email) {
       return res.status(400).send({ err: "Email cannot be empty" });
     }
@@ -53,6 +62,9 @@ exports.signup = async (req, res) => {
     }
     if (!password.trim()) {
       return res.status(400).send({ err: "Password cannot be empty" });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).send({ err: "Passwords don't match" });
     }
     const emailExists = await User.findOne({ email });
     if (emailExists && !emailExists.isActivated) {
