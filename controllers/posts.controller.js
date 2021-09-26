@@ -17,11 +17,11 @@ exports.getPosts = async (req, res) => {
     const postsCount = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate("user", "name image gender")
-      .skip(skip)
-      .limit(postLimit)
-      .sort({
-        createdAt: -1,
-      });
+      // .skip(skip)
+      // .limit(postLimit)
+      // .sort({
+      //   createdAt: -1,
+      // });
     const data = { posts, postsCount };
 
     return res.status(200).json({ data });
