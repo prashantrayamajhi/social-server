@@ -19,9 +19,9 @@ exports.getPosts = async (req, res) => {
       .populate("user", "name image gender")
       // .skip(skip)
       // .limit(postLimit)
-      // .sort({
-      //   createdAt: -1,
-      // });
+      .sort({
+        createdAt: -1,
+      });
     const data = { posts, postsCount };
 
     return res.status(200).json({ data });
